@@ -62,6 +62,7 @@
     "@nestjs/common": "11.1.9",
     "@nestjs/core": "11.1.9",
     "@nestjs/graphql": "13.2.0",
+    "@nestjs/mapped-types": "2.1.0",
     "@nestjs/mercurius": "13.2.0",
     "@nestjs/platform-fastify": "11.1.9",
     "@nestjs/throttler": "6.4.0",

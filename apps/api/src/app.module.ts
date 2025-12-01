@@ -1,24 +1,15 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { MercuriusDriver, MercuriusDriverConfig } from '@nestjs/mercurius';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { join } from 'path';
+import { graphqlConfig, throttlerConfig } from 'apps/api/src/config';
+import { ComplianceModule } from 'apps/api/src/modules/compliance/compliance.module';
 
 @Module({
   imports: [
-    GraphQLModule.forRoot<MercuriusDriverConfig>({
-      driver: MercuriusDriver,
-      graphiql: true,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      sortSchema: true,
-    }),
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60000,
-        limit: 100,
-      },
-    ]),
+    GraphQLModule.forRoot(graphqlConfig),
+    ThrottlerModule.forRoot(throttlerConfig),
+    ComplianceModule,
   ],
   controllers: [],
   providers: [
