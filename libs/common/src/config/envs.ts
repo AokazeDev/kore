@@ -5,6 +5,10 @@ interface EnvVars {
   NODE_ENV: 'development' | 'production' | 'test';
   PORT: number;
 
+  // CORS
+  BACKEND_URL?: string;
+  CORS_ORIGIN?: string;
+
   // Database
   DATABASE_URL: string;
 
@@ -43,8 +47,12 @@ const envsSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().default(3000),
 
+  // CORS
+  BACKEND_URL: z.url().optional(),
+  CORS_ORIGIN: z.string().optional(),
+
   // Database
-  DATABASE_URL: z.string().url(),
+  DATABASE_URL: z.url(),
 
   // Redis
   REDIS_HOST: z.string().default('localhost'),
@@ -90,6 +98,12 @@ const envVars: EnvVars = result.data;
 export const envs = {
   nodeEnv: envVars.NODE_ENV,
   port: envVars.PORT,
+  cors: {
+    origin: envVars.CORS_ORIGIN
+      ? envVars.CORS_ORIGIN.split(',').map(origin => origin.trim())
+      : undefined,
+  },
+  backendUrl: envVars.BACKEND_URL,
   databaseUrl: envVars.DATABASE_URL,
   redis: {
     host: envVars.REDIS_HOST,
