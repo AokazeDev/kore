@@ -18,6 +18,10 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     });
 
     this.db = drizzle(this.pool, { schema });
+
+    this.pool.on('error', err => {
+      console.error('Error inesperado en el cliente postgre:', err);
+    });
   }
 
   async onModuleDestroy() {

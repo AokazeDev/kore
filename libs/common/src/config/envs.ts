@@ -36,11 +36,27 @@ interface EnvVars {
   EPIC_GAMES_CLIENT_ID?: string;
   EPIC_GAMES_CLIENT_SECRET?: string;
 
+  // Twitch OAuth
+  TWITCH_CLIENT_ID?: string;
+  TWITCH_CLIENT_SECRET?: string;
+
+  // Kick OAuth
+  KICK_CLIENT_ID?: string;
+  KICK_CLIENT_SECRET?: string;
+
   // AWS (LocalStack)
   AWS_REGION: string;
   AWS_ACCESS_KEY_ID: string;
   AWS_SECRET_ACCESS_KEY: string;
   AWS_S3_ENDPOINT?: string;
+  AWS_S3_BUCKET_NAME?: string;
+
+  // Meilisearch
+  MEILISEARCH_HOST: string;
+  MEILISEARCH_API_KEY?: string;
+
+  // Resend (Email Service)
+  RESEND_API_KEY?: string;
 }
 
 const envsSchema = z.object({
@@ -78,15 +94,34 @@ const envsSchema = z.object({
   EPIC_GAMES_CLIENT_ID: z.string().optional(),
   EPIC_GAMES_CLIENT_SECRET: z.string().optional(),
 
+  // Twitch OAuth
+  TWITCH_CLIENT_ID: z.string().optional(),
+  TWITCH_CLIENT_SECRET: z.string().optional(),
+
+  // Kick OAuth
+  KICK_CLIENT_ID: z.string().optional(),
+  KICK_CLIENT_SECRET: z.string().optional(),
+
   // AWS (LocalStack)
   AWS_REGION: z.string().default('us-east-1'),
   AWS_ACCESS_KEY_ID: z.string(),
   AWS_SECRET_ACCESS_KEY: z.string(),
   AWS_S3_ENDPOINT: z.url().optional(), // http://localhost:4566
+  AWS_S3_BUCKET_NAME: z.string().optional().default('kore-media'),
+
+  // Meilisearch
+  MEILISEARCH_HOST: z.url(),
+  MEILISEARCH_API_KEY: z.string().optional(),
+
+  // Resend (Email Service)
+  RESEND_API_KEY: z.string().optional(),
 });
 
 const result = envsSchema.safeParse({
   ...process.env,
+  CORS_ORIGIN: process.env.CORS_ORIGIN?.split(',')
+    .map(origin => origin.trim())
+    .join(','),
 });
 
 if (!result.success) {
@@ -98,17 +133,12 @@ const envVars: EnvVars = result.data;
 export const envs = {
   nodeEnv: envVars.NODE_ENV,
   port: envVars.PORT,
-  cors: {
-    origin: envVars.CORS_ORIGIN
-      ? envVars.CORS_ORIGIN.split(',').map(origin => origin.trim())
-      : undefined,
-  },
   backendUrl: envVars.BACKEND_URL,
-  databaseUrl: envVars.DATABASE_URL,
-  redis: {
-    host: envVars.REDIS_HOST,
-    port: envVars.REDIS_PORT,
+  cors: {
+    origin: envVars.NODE_ENV === 'development' ? '*' : envVars.CORS_ORIGIN,
   },
+  databaseUrl: envVars.DATABASE_URL,
+  redisUrl: `redis://${envVars.REDIS_HOST}:${envVars.REDIS_PORT}`,
   auth: {
     secret: envVars.BETTER_AUTH_SECRET,
     url: envVars.BETTER_AUTH_URL,
@@ -128,11 +158,27 @@ export const envs = {
       clientId: envVars.EPIC_GAMES_CLIENT_ID,
       clientSecret: envVars.EPIC_GAMES_CLIENT_SECRET,
     },
+    twitch: {
+      clientId: envVars.TWITCH_CLIENT_ID,
+      clientSecret: envVars.TWITCH_CLIENT_SECRET,
+    },
+    kick: {
+      clientId: envVars.KICK_CLIENT_ID,
+      clientSecret: envVars.KICK_CLIENT_SECRET,
+    },
   },
   aws: {
     region: envVars.AWS_REGION,
     accessKeyId: envVars.AWS_ACCESS_KEY_ID,
     secretAccessKey: envVars.AWS_SECRET_ACCESS_KEY,
     s3Endpoint: envVars.AWS_S3_ENDPOINT,
+    s3BucketName: envVars.AWS_S3_BUCKET_NAME,
+  },
+  meilisearch: {
+    host: envVars.MEILISEARCH_HOST,
+    apiKey: envVars.MEILISEARCH_API_KEY,
+  },
+  resend: {
+    apiKey: envVars.RESEND_API_KEY,
   },
 };
