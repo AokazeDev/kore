@@ -17,8 +17,8 @@ export class User {
   @Field({ nullable: true })
   image?: string | null;
 
-  @Field()
-  username: string;
+  @Field({ nullable: true })
+  username?: string | null;
 
   @Field({ nullable: true })
   bio?: string | null;

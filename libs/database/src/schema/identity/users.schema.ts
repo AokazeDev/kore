@@ -21,7 +21,7 @@ export const users = pgTable(
     email: varchar('email', { length: 255 }).notNull().unique(),
     emailVerified: boolean('email_verified').notNull().default(false),
     image: text('image'),
-    username: varchar('username', { length: 50 }).notNull().unique(),
+    username: varchar('username', { length: 50 }).unique(),
     bio: text('bio'),
     website: varchar('website', { length: 255 }),
     location: varchar('location', { length: 100 }),
